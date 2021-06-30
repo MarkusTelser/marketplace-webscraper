@@ -1,72 +1,10 @@
-from genericpath import isfile
+from main import save_latest_entry
 from sys import maxsize
-from time import sleep
-from json import load, dump
-from os.path import isfile
-from os import stat, getcwd, listdir
-from os.path import join, isdir
 
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException, NoSuchWindowException
-
-from airium import Airium
-
-def save_latest_entry(website, link):
-    oldEntry = ""
-    # get saved data
-    data = {}
-    if not isfile("history.json") or stat("history.json").st_size == 0:
-        with open("history.json", 'w'):
-            pass
-    else:
-        with open("history.json") as f:
-            data = load(f)
-    if website in data:
-        oldEntry = data[website]
-    # add/update entry for latest item on website
-    new_data = {website : link}
-    data.update(new_data)
-    # append new data
-    with open("history.json", "w") as f:
-        dump(data, f)
-    return oldEntry
-    
-
-def gen_website():
-    a = Airium()
-    html = '<!DOCTYPE html><html>'
-    html += '<head><meta charset="utf-8"><title>New Items</title></head>'
-    html += """
-            <style>
-            table{
-                width: 100%;
-            }
-            table, th, td{
-                border: 2px solid green;
-            }
-            </style>
-            """
-    html += '<body><h1>New Items</h1>'
-    if isdir(".newitems"):
-        html += '<table id="table">'
-        for i in range(len(listdir(".newitems"))):
-            html += '<tr><th colspan="4">'+ listdir(".newitems")[i].strip() +'</th></tr>'
-            with open(join(".newitems",listdir(".newitems")[i]), "r") as f:
-                lines = f.readlines()
-                for line in lines:
-                    items = line.split("||").encode('UTF-8')
-                    html += f'<tr><td style="width:25%"><a href="{items[4]}">{items[0]}</a></td>'
-                    html += f'<td style="width:25%">{items[1]}</td>'
-                    html += f'<td style="width:25%">{items[2]}</td>'
-                    html += f'<td style="width:25%">{items[3]}</td></tr>'
-    html += '</body></html>'
-
-    with open("index.html", "w") as f:
-        f.write(html)
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
 
 def second_hand(driver, first_page=1, last_page=20, min_price=0, max_price=10000):
     driver.get("https://www.second-hand.it")
@@ -107,8 +45,8 @@ def second_hand(driver, first_page=1, last_page=20, min_price=0, max_price=10000
                             noMoreElements = True
                             break
                         print(f"{title} || {price} || {location} || {date} || {link}")
-                        with open(".newitems/second_hand.txt", "a") as f:
-                            f.write(f"{title} || {price} || {location} || {date} || {link}\n")
+                        with open("data/second_hand.txt", "a") as f:
+                            f.write(f"{title} || {conv_price} || {location} || {date} || {link}\n")
             except TimeoutException as e:
                 if j == 1:
                     noMoreElements = True
@@ -118,7 +56,7 @@ def subito(driver, first_page=1, last_page=20, min_price=0, max_price=10000):
     driver.get("https://www.subito.it")
 
     # accept cookies
-    driver.find_element_by_id("didomi-notice-agree-button").click()
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'didomi-notice-agree-button'))).click()
 
     # run through all pages
     noMoreElements = False
@@ -150,34 +88,15 @@ def subito(driver, first_page=1, last_page=20, min_price=0, max_price=10000):
                             noMoreElements = True
                             break
                         print(f"{title} || {price} || {location} || {date} || {link}")
-                        with open("subito.txt", "a") as f:
-                            f.write(f"{title} || {price} || {location} || {date} || {link}\n")
+                        with open("data/subito.txt", "a") as f:
+                            f.write(f"{title} || {conv_price} || {location} || {date} || {link}\n")
             except TimeoutException as e:
                 if j == 1:
                     noMoreElements = True
                 break
-            
+
 def facebook_marketplace(driver, first_page=1, last_page=20, min_price=0, max_price=10000):
-    driver.get("https://www.facebook.com/marketplace")
+    driver.get("https://www.facebook.com/marketplace/109939089035498")
 
-def main():
-    try:
-        driver = webdriver.Chrome()
-
-        # fetch new data from websites
-        second_hand(driver)
-        subito(driver)
-        #facebook_marketplace(driver)
-
-        # generate showcase website, open
-        gen_website()
-        path = join(getcwd(),"index.html")
-        driver.get("file:///" + path)
-        sleep(10)
-
-        driver.close()
-    except (KeyboardInterrupt, NoSuchWindowException):
-        print()
-
-if __name__ == "__main__":
-    main()
+    # accept cookies
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="facebook"]/body/div[2]/div[1]/div/div[2]/div/div/div/div/div[1]/div/div[3]/div/div[1]/div[1]'))).click()
