@@ -1,0 +1,41 @@
+
+    body{
+        background-color: #E1E8ED;
+    }
+    h1{
+        font-size: 30pt;
+        font-color: #292F33;
+        justify-content: center;
+        text-align: center;
+    }
+    table{
+        margin-left: auto;
+        margin-right: auto;
+        width: 80%;
+    }
+    th, td{
+        border: 2px solid  #66757F;
+        font-color: #CCD6DD;
+    }
+    th{
+        font-size: 22pt;
+        padding: 5px;
+    }
+    a {
+        color: #66757F;
+    }
+    td{
+        width: 25%;
+        font-size: 16pt;
+    }
+    .section{
+        margin-top: 30px;
+    }
+    .type{
+        font-size: 20pt;
+        font-weight: bold;
+    }
+    .items{
+        width: 20%;
+    }
+    
