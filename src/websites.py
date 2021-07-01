@@ -1,5 +1,6 @@
-from main import save_latest_entry
+from main import save_latest_entry, write_data
 from sys import maxsize
+from time import sleep
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -34,7 +35,7 @@ def second_hand(driver, first_page=1, last_page=20, min_price=0, max_price=10000
                     link = element.find_elements_by_class_name('uk-cover-container.list-image')[0].get_attribute("href")
                     
                     # print out fetched data, save latest entry/all entrys after that
-                    conv_price = int(price.replace('.', '').split("€")[0])
+                    conv_price = int(price.replace('.', '').split("€")[0].split(' ')[0])
                     if conv_price >= min_price and conv_price <= max_price:
                         if i == first_page and first:
                             oldEntry = save_latest_entry("second_hand", link)
@@ -45,8 +46,7 @@ def second_hand(driver, first_page=1, last_page=20, min_price=0, max_price=10000
                             noMoreElements = True
                             break
                         print(f"{title} || {price} || {location} || {date} || {link}")
-                        with open(".newitems/second_hand.txt", "a") as f:
-                            f.write(f"{title} || {conv_price} || {location} || {date} || {link}\n")
+                        write_data("second_hand", title, conv_price, location, date, link)
             except TimeoutException as e:
                 if j == 1:
                     noMoreElements = True
@@ -88,15 +88,22 @@ def subito(driver, first_page=1, last_page=20, min_price=0, max_price=10000):
                             noMoreElements = True
                             break
                         print(f"{title} || {price} || {location} || {date} || {link}")
-                        with open(".newitems/subito.txt", "a") as f:
-                            f.write(f"{title} || {conv_price} || {location} || {date} || {link}\n")
+                        write_data("subito", title, conv_price, location, date, link)
             except TimeoutException as e:
                 if j == 1:
                     noMoreElements = True
                 break
 
-def facebook_marketplace(driver, first_page=1, last_page=20, min_price=0, max_price=10000):
-    driver.get("https://www.facebook.com/marketplace/109939089035498")
+def facebook_marketplace(driver, first_element=1, last_element=40, min_price=0, max_price=10000):
+    driver.get("https://www.facebook.com/marketplace")
 
     # accept cookies
     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="facebook"]/body/div[2]/div[1]/div/div[2]/div/div/div/div/div[1]/div/div[3]/div/div[1]/div[1]'))).click()
+    sleep(0.5)
+
+    driver.get(f"https://www.facebook.com/marketplace/109939089035498/vehicles?minPrice={min_price}&maxPrice={max_price}&exact=true")
+    for i in range(first_element, last_element):
+        elements = driver.find_elements_by_class_name('_1oem')
+        
+        for element in elements:
+            print(element.text)
