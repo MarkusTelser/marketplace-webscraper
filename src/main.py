@@ -1,6 +1,7 @@
 import websites as web
 from page import gen_website
 
+import codecs as cd
 from genericpath import isfile
 from time import sleep
 from json import load, dump
@@ -17,15 +18,17 @@ ROOT_DIR = dirname(dirname(modules['__main__'].__file__))
 def write_data(dataset, website):
     # read old content of file and save
     data_path = join(ROOT_DIR, "data", "websites", website + ".txt")
-    with open(data_path, "r") as f:
-            old_data = f.readlines()
+    old_data = ""
+    if isfile(data_path):
+        with cd.open(data_path, "r", "utf-8") as f:
+                old_data = f.readlines()
     # write new content
-    with open(data_path, "w") as f:
+    with cd.open(data_path, "w", "utf-8") as f:
         for data in dataset:
             title, price, location, date, link = data
             f.write(f"{title} || {price} || {location} || {date} || {link}\n")
     # append old content of file
-    with open(data_path, "a") as f:
+    with cd.open(data_path, "a", "utf-8") as f:
         print(old_data)
         for d in old_data:
             f.write(d)
@@ -73,8 +76,8 @@ def main():
         driver = webdriver.Chrome(options=chrome_options)
 
         # fetch new data from websites
-        #web.second_hand(driver, max_elements=10)
-        #web.subito(driver, max_elements=10)
+        web.second_hand(driver, max_elements=10)
+        web.subito(driver, max_elements=10)
         #web.facebook_marketplace(driver)
 
         # generate showcase website, open
