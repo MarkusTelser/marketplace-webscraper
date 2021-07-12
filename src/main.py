@@ -14,19 +14,26 @@ from selenium.common.exceptions import NoSuchWindowException
 
 ROOT_DIR = dirname(dirname(modules['__main__'].__file__))
 
-def write_data(website, title, price, location, date, link):
+def write_data(dataset, website):
+    # read old content of file and save
     data_path = join(ROOT_DIR, "data", "websites", website + ".txt")
     with open(data_path, "r") as f:
-        data = f.read()
+            data = f.read()
+    # write new content
     with open(data_path, "w") as f:
-        f.write(f"{title} || {price} || {location} || {date} || {link}\n")
+        for data in dataset:
+            title, price, location, date, link = data
+            f.write(f"{title} || {price} || {location} || {date} || {link}\n")
+    # append old content of file
     with open(data_path, "a") as f:
-        f.write(data)
+        for d in data:
+            f.write(d)
 
 
 def save_latest_entry(website, link):
     history_path = join(ROOT_DIR, "data","history.json")
     oldEntry = ""
+
     # get saved data
     data = {}
     if not isfile(history_path) or stat(history_path).st_size == 0:
@@ -37,13 +44,15 @@ def save_latest_entry(website, link):
             data = load(f)
     if website in data:
         oldEntry = data[website]
+    
     # add/update entry for latest item on website
     new_data = {website : link}
     data.update(new_data)
+
     # append new data
-    
     with open(history_path, "w") as f:
         dump(data, f)
+    
     return oldEntry
     
 def open_website(driver):
