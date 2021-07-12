@@ -18,7 +18,7 @@ def write_data(dataset, website):
     # read old content of file and save
     data_path = join(ROOT_DIR, "data", "websites", website + ".txt")
     with open(data_path, "r") as f:
-            data = f.read()
+            old_data = f.readlines()
     # write new content
     with open(data_path, "w") as f:
         for data in dataset:
@@ -26,7 +26,8 @@ def write_data(dataset, website):
             f.write(f"{title} || {price} || {location} || {date} || {link}\n")
     # append old content of file
     with open(data_path, "a") as f:
-        for d in data:
+        print(old_data)
+        for d in old_data:
             f.write(d)
 
 
@@ -54,30 +55,32 @@ def save_latest_entry(website, link):
         dump(data, f)
     
     return oldEntry
-    
+
+
 def open_website(driver):
     path = join(ROOT_DIR, "page", "index.html")
     driver.get("file:///" + path)
-    sleep(100)
+
 
 def main():
     try:
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option("detach", True) # stop closing
-        options.add_experimental_option('excludeSwitches', ['enable-logging']) # disable logging
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--incognito") # open in incognito mode
+        chrome_options.add_argument("--start-maximized") # opens window max dimensions
+        chrome_options.add_experimental_option("detach", True) # stop closing
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging']) # disable logging
 
-        driver = webdriver.Chrome(options=options)
+        driver = webdriver.Chrome(options=chrome_options)
 
         # fetch new data from websites
-        web.second_hand(driver, max_elements=10)
-        web.subito(driver, max_elements=10)
+        #web.second_hand(driver, max_elements=10)
+        #web.subito(driver, max_elements=10)
         #web.facebook_marketplace(driver)
 
         # generate showcase website, open
         gen_website()
         open_website(driver)
 
-        driver.quit()
     except (KeyboardInterrupt, NoSuchWindowException):
         print()
 
