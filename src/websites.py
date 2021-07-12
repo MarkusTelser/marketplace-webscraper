@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 
-def second_hand(driver, first_page=1, last_page=20, min_price=0, max_price=10000):
+def second_hand(driver, first_page=1, last_page=20, min_price=0, max_price=10000, max_elements=50):
     driver.get("https://www.second-hand.it")
 
     # accept cookies
@@ -17,14 +17,20 @@ def second_hand(driver, first_page=1, last_page=20, min_price=0, max_price=10000
 
     # run through all pages
     noMoreElements = False
+    elements = 0
     for i in range(first_page, last_page):
         first = True
         # stop if there are no more items
         if noMoreElements:
             break
+        # fetch only max count of elements
+        if elements >= max_elements:
+            break
         driver.get(f"https://www.second-hand.it/c/auto-motorrad?page={i}")
         # run through all items
         for j in range(1, maxsize):
+            if elements >= max_elements:
+                break
             try:
                 element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH , f'//*[@id="app"]/div[2]/div[2]/div[4]/div/ul/li[{j}]')))
                 if element.text != "":
@@ -47,12 +53,13 @@ def second_hand(driver, first_page=1, last_page=20, min_price=0, max_price=10000
                             break
                         print(f"{title} || {price} || {location} || {date} || {link}")
                         write_data("second_hand", title, conv_price, location, date, link)
+                        elements += 1
             except TimeoutException as e:
                 if j == 1:
                     noMoreElements = True
                 break
 
-def subito(driver, first_page=1, last_page=20, min_price=0, max_price=10000):
+def subito(driver, first_page=1, last_page=20, min_price=0, max_price=10000, max_elements=50):
     driver.get("https://www.subito.it")
 
     # accept cookies
@@ -60,13 +67,19 @@ def subito(driver, first_page=1, last_page=20, min_price=0, max_price=10000):
 
     # run through all pages
     noMoreElements = False
+    elements = 0
     for i in range(first_page, last_page):
         first = True
         # stop if there are no more items
         if noMoreElements:
             break
+        # fetch only max count of elements
+        if elements >= max_elements:
+            break
         driver.get(f'https://www.subito.it/annunci-italia/vendita/auto/?o={i}')
         for j in range(1, maxsize):
+            if elements >= max_elements:
+                break
             try:
                 element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH , f'//*[@id="layout"]/main/div[2]/div[6]/div[2]/div[1]/div[4]/div[{j}]')))
                 if "BigCard" in element.get_attribute("class"):
@@ -89,12 +102,13 @@ def subito(driver, first_page=1, last_page=20, min_price=0, max_price=10000):
                             break
                         print(f"{title} || {price} || {location} || {date} || {link}")
                         write_data("subito", title, conv_price, location, date, link)
+                        elements += 1
             except TimeoutException as e:
                 if j == 1:
                     noMoreElements = True
                 break
 
-def facebook_marketplace(driver, first_element=1, last_element=40, min_price=0, max_price=10000):
+def facebook_marketplace(driver, first_element=1, last_element=40, min_price=0, max_price=10000, max_elements=50):
     driver.get("https://www.facebook.com/marketplace")
 
     # accept cookies
