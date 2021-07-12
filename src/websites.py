@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 
-def second_hand(driver, first_page=1, last_page=20, min_price=0, max_price=10000, max_elements=50):
+def second_hand(driver, first_page=1, last_page=20, max_elements=50, min_price=0, max_price=10000):
     driver.get("https://www.second-hand.it")
 
     # accept cookies
@@ -62,7 +62,7 @@ def second_hand(driver, first_page=1, last_page=20, min_price=0, max_price=10000
     # write them all to file
     write_data(stack, "second_hand")
 
-def subito(driver, first_page=1, last_page=20, min_price=0, max_price=10000, max_elements=50):
+def subito(driver, first_page=1, last_page=20, max_elements=50, min_price=0, max_price=10000):
     driver.get("https://www.subito.it")
 
     # accept cookies
@@ -114,7 +114,7 @@ def subito(driver, first_page=1, last_page=20, min_price=0, max_price=10000, max
     # write them all to file
     write_data(stack, "subito")
 
-def facebook_marketplace(driver, first_element=1, last_element=40, min_price=0, max_price=10000, max_elements=50):
+def facebook_marketplace(driver, first_element=1, last_element=40, max_elements=50, min_price=0, max_price=10000):
     driver.get("https://www.facebook.com/marketplace")
 
     # accept cookies
