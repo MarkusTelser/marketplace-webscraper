@@ -1,6 +1,7 @@
 from main import save_latest_entry, write_data
 from sys import maxsize
 from time import sleep
+from datetime import datetime
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -36,11 +37,17 @@ def second_hand(driver, first_page=1, last_page=20, max_elements=50, min_price=0
                 element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH , f'//*[@id="app"]/div[2]/div[2]/div[4]/div/ul/li[{j}]')))
                 if element.text != "":
                     title = element.find_elements_by_class_name('list-item-title')[0].text
-                    location = element.find_elements_by_class_name('list-item-location')[0].text
+                    location = element.find_elements_by_class_name('list-item-location')[0].text.split(' ')[1]
                     price = element.find_elements_by_class_name('list-item-price')[0].text
                     date = element.find_elements_by_class_name('uk-text')[0].text
                     link = element.find_elements_by_class_name('uk-cover-container.list-image')[0].get_attribute("href")
-                    
+
+                    # add real date and not "today"
+                    if ":" in date:
+                        date += " " + datetime.today().strftime('%d.%m.%Y')
+                    else:
+                        date += datetime.today().strftime('%Y')
+
                     # print out fetched data, save latest entry/all entrys after that
                     conv_price = int(price.replace('.', '').split("€")[0].split(' ')[0])
                     if conv_price >= min_price and conv_price <= max_price:
@@ -52,7 +59,7 @@ def second_hand(driver, first_page=1, last_page=20, max_elements=50, min_price=0
                             noMoreElements = True
                             break
                         print(f"{title} || {price} || {location} || {date} || {link}")
-                        stack.append([title, conv_price, location, date, link])
+                        stack.append([title, price, location, date, link])
                         elements += 1
             except TimeoutException as e:
                 if j == 1:
@@ -92,7 +99,11 @@ def subito(driver, first_page=1, last_page=20, max_elements=50, min_price=0, max
                     location = element.find_elements_by_tag_name("span")[1].text
                     date = element.text.split('\n')[2].split(')')[-1]
                     link = element.find_element_by_tag_name("a").get_attribute("href")
-                    
+
+                    # add real date and not "today"
+                    if "Oggi" in date:
+                        date += " " + datetime.today().strftime('%d.%m.%Y')
+
                     # print out fetched data, save latest entry/all entrys after that
                     conv_price = int(price.replace('.', '').split("€")[0])
                     if conv_price >= min_price and conv_price <= max_price:
@@ -104,7 +115,7 @@ def subito(driver, first_page=1, last_page=20, max_elements=50, min_price=0, max
                             noMoreElements = True
                             break
                         print(f"{title} || {price} || {location} || {date} || {link}")
-                        stack.append([title, conv_price, location, date, link])
+                        stack.append([title, price, location, date, link])
                         elements += 1
             except TimeoutException as e:
                 if j == 1:
