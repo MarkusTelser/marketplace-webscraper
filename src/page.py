@@ -7,12 +7,11 @@ ROOT_DIR = dirname(dirname(modules['__main__'].__file__))
 
 def gen_html():
     html = '<!DOCTYPE html><html>'
-    html += '<head><meta charset="utf-16"><title>New Items</title></head>'
+    html += '<head><meta http-equiv="Content-Type" content="text/html;charset=utf-8"><title>New Items</title></head>'
     html += '<link rel="stylesheet" href="style.css">'
     html += '<script src="script.js"></script>'
     html += '<body><h1>New Marketplace Items</h1>'
     if isdir("data"):
-        
         websites = listdir(join(ROOT_DIR, "data", "websites"))
         for i in range(len(websites)):
             html += '<table class="section">'
@@ -30,7 +29,7 @@ def gen_html():
                     html += f'<td class="items">{items[1]}</td>'
                     html += f'<td class="items">{items[2]}</td>'
                     html += f'<td class="items">{items[3]}</td>'
-                    html += f'<td><button onclick="deleteRow(this)"><img src="{join(ROOT_DIR, "data", "trash.svg")}"></button></td></tr>'
+                    html += f'<td class="trash"><button onclick="deleteRow(this)"><img src="{join(ROOT_DIR, "data", "trash.svg")}"></button></td></tr>'
             html += '</table>'
     html += '</body></html>'
     return html
@@ -39,6 +38,16 @@ def gen_js():
     js = """
     function deleteRow(btn) {
         var row = btn.parentNode.parentNode;
+        var link = row.getElementsByTagName("td")[0].childNodes[0].getAttribute("href");
+        
+        // delete in file
+        let fr = new FileReader();
+        fr.onload = function(e) {
+            // e.target.result should contain the text
+        };
+        fr.readAsText("../data/websites/second_hand.txt");
+
+        // remove html column
         row.parentNode.removeChild(row);
     }
     """
@@ -59,7 +68,6 @@ def gen_css():
         margin-left: auto;
         margin-right: auto;
         width: 80%;
-        table-layout: fixed;
     }
     th, td{
         border: 2px solid  #66757F;
@@ -73,18 +81,25 @@ def gen_css():
         color: #66757F;
     }
     td{
-        width: 25%;
         font-size: 16pt;
+        width:
     }
     .section{
-        margin-top: 30px;
+        margin-top: 40px;
+        margin-bottom: 60px;
     }
     .type{
         font-size: 20pt;
         font-weight: bold;
     }
     .items{
-        width: 20%;
+        width: 25%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .trash{
+        border: none; 
     }
     """
     return css
