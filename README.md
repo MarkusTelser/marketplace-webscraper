@@ -33,3 +33,10 @@ These folders are created by the program and used to store data:
 
 
 ## Example Pictures:
+how the terminal output will look like:
+![Terminal Output](https://user-images.githubusercontent.com/51853225/125530084-413c601e-7b5f-45e1-b204-08a6e8018881.png)
+
+
+how the generated display page will look like:
+![Example page](https://user-images.githubusercontent.com/51853225/125530360-27a618de-28c0-40e2-a3fe-74ade6baa35e.png)
+
