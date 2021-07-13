@@ -157,15 +157,20 @@ def auto_suedtirol(driver, first_page=1, last_page=50, max_elements=100, min_pri
                 element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, f'//*[@id="post-1120"]/div[1]/div/div/div/div/div[2]/div[2]/div/div/div[{j}]')))
 
                 title = element.find_element_by_class_name("item-title").text
-                price = element.find_element_by_class_name("iw-meta-price").text
+                try:
+                    price = element.find_element_by_class_name("iw-meta-price").text
+                except NoSuchElementException:
+                    location = "no price"
                 try:
                     location = element.find_element_by_class_name("location-town").text
                 except NoSuchElementException:
                     location = "no location"
                 date = "no date"
                 link = element.find_element_by_class_name("iw-property-title").find_element_by_tag_name("a").get_attribute("href")
-                mileage = element.find_element_by_class_name("iw-meta-beds").text
-
+                try:
+                    mileage = element.find_element_by_class_name("iw-meta-beds").text
+                except NoSuchElementException:
+                    location = "no mileage"
                 # add real date and not "today"
                 if "Oggi" in date:
                     date += " " + datetime.today().strftime('%d.%m.%Y')
@@ -190,7 +195,7 @@ def auto_suedtirol(driver, first_page=1, last_page=50, max_elements=100, min_pri
                 break
 
     # write them all to file
-    write_data(stack, "subito")
+    write_data(stack, "auto_suedtirol")
 
 
 def facebook_marketplace(driver, first_element=1, last_element=40, max_elements=50, min_price=0, max_price=10000):
