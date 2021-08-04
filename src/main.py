@@ -3,7 +3,7 @@ from page import gen_website
 from data import remove_data, open_website
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchWindowException
+from selenium.common.exceptions import NoSuchWindowException, WebDriverException
 
 
 def main():
@@ -28,6 +28,8 @@ def main():
         open_website(driver)
     except (KeyboardInterrupt, NoSuchWindowException):
         print()
+    except WebDriverException as e:
+        print(str(e))
 
 
 if __name__ == "__main__":
